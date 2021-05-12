@@ -50,98 +50,112 @@ func main() {
 
 // Manacher's algorithm
 func longestPalindrome(s string) string {
-	palinLens := make([]int, len(s))
 
 	// even palindrome length
-	longestPalindromeEven := func(s string) (int, string) {
-		var i, currRight, palinLen, palinEnd, right, left, curLen, max, maxLeft, maxRight int
-		right = -1
+	longestPalindromeEven := func(s string) <-chan string {
+		ch := make(chan string)
+		go func() {
+			defer close(ch)
+			palinLens := make([]int, len(s))
+			var i, currRight, palinLen, palinEnd, right, left, curLen, max, maxLeft, maxRight int
+			right = -1
 
-		for i = 1; i < len(s); i++ {
-			if i < right {
-				palinLen = palinLens[left+right-i+1]
-				palinEnd = right - i
-				if palinLen < palinEnd {
-					curLen = palinLen
+			for i = 1; i < len(s); i++ {
+				if i < right {
+					palinLen = palinLens[left+right-i+1]
+					palinEnd = right - i
+					if palinLen < palinEnd {
+						curLen = palinLen
+					} else {
+						curLen = palinEnd
+					}
 				} else {
-					curLen = palinEnd
+					curLen = 0
 				}
-			} else {
-				curLen = 0
+
+				for i+curLen < len(s) && i-curLen-1 >= 0 && s[i-curLen-1] == s[i+curLen] {
+					curLen++
+				}
+
+				palinLens[i] = curLen
+				currRight = i + curLen - 1
+				if currRight > right {
+					right = currRight
+					left = i - curLen
+				}
+
+				curLen = right - left + 1
+				if max < curLen {
+					max = curLen
+					maxLeft = left
+					maxRight = right
+				}
 			}
 
-			for i+curLen < len(s) && i-curLen-1 >= 0 && s[i-curLen-1] == s[i+curLen] {
-				curLen++
+			if max == 0 {
+				return
 			}
 
-			palinLens[i] = curLen
-			currRight = i + curLen - 1
-			if currRight > right {
-				right = currRight
-				left = i - curLen
-			}
-
-			curLen = right - left + 1
-			if max < curLen {
-				max = curLen
-				maxLeft = left
-				maxRight = right
-			}
-		}
-
-		if max == 0 {
-			return 0, ""
-		}
-		return max, s[maxLeft : maxRight+1]
+			ch <- s[maxLeft : maxRight+1]
+			return
+		}()
+		return ch
 	}
 
 	// odd palindrome length
-	longestPalindromeOdd := func(s string) (int, string) {
-		var i, currRight, palinLen, palinEnd, right, left, curLen, max, maxRight, maxLeft int
-		right = -1
+	longestPalindromeOdd := func(s string) <-chan string {
+		ch := make(chan string)
+		go func() {
+			defer close(ch)
+			palinLens := make([]int, len(s))
+			var i, currRight, palinLen, palinEnd, right, left, curLen, max, maxRight, maxLeft int
+			right = -1
 
-		for i = 0; i < len(s); i++ {
-			if i < right {
-				palinLen = palinLens[left+right-i]
-				palinEnd = right - i
-				if palinLen < palinEnd {
-					curLen = palinLen
+			for i = 0; i < len(s); i++ {
+				if i < right {
+					palinLen = palinLens[left+right-i]
+					palinEnd = right - i
+					if palinLen < palinEnd {
+						curLen = palinLen
+					} else {
+						curLen = palinEnd
+					}
 				} else {
-					curLen = palinEnd
+					curLen = 1
 				}
-			} else {
-				curLen = 1
+
+				for ; i+curLen < len(s) && i-curLen >= 0 && s[i-curLen] == s[i+curLen]; curLen++ {
+				}
+
+				palinLens[i] = curLen
+				currRight = i + curLen - 1
+				if currRight > right {
+					right = currRight
+					left = i - curLen + 1
+				}
+
+				curLen = right - left + 1
+				if max < curLen {
+					max = curLen
+					maxRight = right
+					maxLeft = left
+				}
 			}
 
-			for ; i+curLen < len(s) && i-curLen >= 0 && s[i-curLen] == s[i+curLen]; curLen++ {
+			if max == 0 {
+				return
 			}
 
-			palinLens[i] = curLen
-			currRight = i + curLen - 1
-			if currRight > right {
-				right = currRight
-				left = i - curLen + 1
-			}
-
-			curLen = right - left + 1
-			if max < curLen {
-				max = curLen
-				maxRight = right
-				maxLeft = left
-			}
-		}
-
-		if max == 0 {
-			return 0, ""
-		}
-		return max, s[maxLeft : maxRight+1]
+			ch <- s[maxLeft : maxRight+1]
+		}()
+		return ch
 	}
 
-	max1, s1 := longestPalindromeEven(s)
-	max2, s2 := longestPalindromeOdd(s)
+	palinom1 := <-longestPalindromeEven(s)
+	palinom2 := <-longestPalindromeOdd(s)
 
-	if max1 < max2 {
-		return s2
+	if len(palinom1) < len(palinom2) {
+		return palinom2
 	}
-	return s1
+	return palinom1
 }
