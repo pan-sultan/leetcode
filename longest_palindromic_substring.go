@@ -151,11 +151,11 @@ func longestPalindrome(s string) string {
 		return ch
 	}
 
-	palinom1 := <-longestPalindromeEven(s)
-	palinom2 := <-longestPalindromeOdd(s)
+	palindromEvent := <-longestPalindromeEven(s)
+	palindromOdd := <-longestPalindromeOdd(s)
 
-	if len(palinom1) < len(palinom2) {
-		return palinom2
+	if len(palindromEvent) < len(palindromOdd) {
+		return palindromOdd
 	}
-	return palinom1
+	return palindromEvent
 }
