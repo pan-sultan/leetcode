@@ -50,13 +50,14 @@ func main() {
 
 // Manacher's algorithm
 func longestPalindrome(s string) string {
+	buffer := make([]int, len(s)*2)
 
 	// even palindrome length
 	longestPalindromeEven := func(s string) <-chan string {
 		ch := make(chan string)
 		go func() {
 			defer close(ch)
-			palinLens := make([]int, len(s))
+			palinLens := buffer[:len(s)]
 			var i, currRight, palinLen, palinEnd, right, left, curLen, max, maxLeft, maxRight int
 			right = -1
 
@@ -107,7 +108,7 @@ func longestPalindrome(s string) string {
 		ch := make(chan string)
 		go func() {
 			defer close(ch)
-			palinLens := make([]int, len(s))
+			palinLens := buffer[len(s):]
 			var i, currRight, palinLen, palinEnd, right, left, curLen, max, maxRight, maxLeft int
 			right = -1
 
