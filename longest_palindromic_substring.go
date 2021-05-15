@@ -5,7 +5,7 @@ Given a string s, return the longest palindromic substring in s.
 https://leetcode.com/problems/longest-palindromic-substring/
 
 Runtime: 0 ms, faster than 100.00% of Go online submissions for Longest Palindromic Substring.
-Memory Usage: 3.6 MB, less than 34.09% of Go online submissions for Longest Palindromic Substring.
+Memory Usage: 4.5 MB, less than 32.35% of Go online submissions for Longest Palindromic Substring.
 
 solved with Manacher's Algorithm
 */
