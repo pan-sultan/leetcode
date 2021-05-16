@@ -60,9 +60,6 @@ func myAtoi(s string) (integer int) {
 		}
 		if equal || index == 0 {
 			more = s[i] > maxstr[index]
-		}
-
-		if equal || index == 0 {
 			equal = s[i] == maxstr[index]
 		}
 		index++
