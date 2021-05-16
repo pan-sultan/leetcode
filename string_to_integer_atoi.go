@@ -65,8 +65,6 @@ func myAtoi(s string) (integer int) {
 		index++
 	}
 
-	integer /= dec
-
 	if dec == 1 {
 		if minus && more {
 			return min
@@ -74,6 +72,8 @@ func myAtoi(s string) (integer int) {
 		if !minus && (more || equal) {
 			return max
 		}
+	} else {
+		integer /= dec
 	}
 
 	if minus {
