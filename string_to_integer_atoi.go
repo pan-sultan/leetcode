@@ -33,8 +33,6 @@ func myAtoi(s string) (integer int) {
 	const latestMinDigit = (-min) % 10
 	const latestMaxDigit = max % 10
 
-	fmt.Println(latestMinDigit)
-
 	i := 0
 	for ; i < len(s) && s[i] == ' '; i++ {
 	}
