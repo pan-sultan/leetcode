@@ -27,8 +27,11 @@ func main() {
 }
 
 func myAtoi(s string) (integer int) {
+	const maxDec = 1000000000
 	const min = -2147483648
 	const max = 2147483647
+	const latestMinDigit = (-min) % 10
+	const latestMaxDigit = max % 10
 
 	i := 0
 	for ; i < len(s) && s[i] == ' '; i++ {
@@ -49,7 +52,7 @@ func myAtoi(s string) (integer int) {
 	for ; i < len(s) && s[i] >= '0' && s[i] <= '9'; i++ {
 		digit := int(s[i] - '0')
 
-		if dec == 0 || (dec == 1 && (overflow || (possibleOverflow && ((minus && digit > 8) || (!minus && digit > 7))))) {
+		if dec == 0 || (dec == 1 && (overflow || (possibleOverflow && ((minus && digit > latestMinDigit) || (!minus && digit > latestMaxDigit))))) {
 			if minus {
 				return min
 			}
@@ -63,8 +66,8 @@ func myAtoi(s string) (integer int) {
 		}
 
 		if dec == 10 {
-			almostMax := (max / 10) * 10
-			almostMin := (min / 10) * 10
+			almostMax := max - (max % 10)
+			almostMin := min - (min % 10)
 			overflow = (integer > almostMax) || (minus && integer < almostMin)
 			possibleOverflow = (integer == almostMax) || (minus && integer == almostMin)
 		}
