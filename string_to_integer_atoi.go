@@ -23,7 +23,7 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println(myAtoi("2147483648"))
+	fmt.Println(myAtoi("-2147483649"))
 }
 
 func myAtoi(s string) (integer int) {
@@ -32,6 +32,8 @@ func myAtoi(s string) (integer int) {
 	const max = 2147483647
 	const latestMinDigit = (-min) % 10
 	const latestMaxDigit = max % 10
+
+	fmt.Println(latestMinDigit)
 
 	i := 0
 	for ; i < len(s) && s[i] == ' '; i++ {
@@ -46,7 +48,7 @@ func myAtoi(s string) (integer int) {
 	for ; i < len(s) && s[i] == '0'; i++ {
 	}
 
-	dec := 1000000000
+	dec := maxDec
 	overflow := false
 	possibleOverflow := false
 	for ; i < len(s) && s[i] >= '0' && s[i] <= '9'; i++ {
@@ -66,8 +68,8 @@ func myAtoi(s string) (integer int) {
 		}
 
 		if dec == 10 {
-			almostMax := max - (max % 10)
-			almostMin := min - (min % 10)
+			almostMax := max - latestMaxDigit
+			almostMin := min + latestMinDigit
 			overflow = (integer > almostMax) || (minus && integer < almostMin)
 			possibleOverflow = (integer == almostMax) || (minus && integer == almostMin)
 		}
