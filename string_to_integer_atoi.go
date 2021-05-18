@@ -57,11 +57,7 @@ func myAtoi(s string) (integer int) {
 		}
 
 		if minus {
-			if integer == 0 {
-				integer = -(digit * dec)
-			} else {
-				integer -= digit * dec
-			}
+			integer -= digit * dec
 		} else {
 			integer += digit * dec
 		}
