@@ -23,16 +23,12 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println(myAtoi("-1"))
+	fmt.Println(myAtoi("2147483648"))
 }
 
 func myAtoi(s string) (integer int) {
 	const min = -2147483648
 	const max = 2147483647
-	const maxstr = "2147483648"
-	index := 0
-	more := false
-	equal := false
 
 	i := 0
 	for ; i < len(s) && s[i] == ' '; i++ {
@@ -47,37 +43,41 @@ func myAtoi(s string) (integer int) {
 	for ; i < len(s) && s[i] == '0'; i++ {
 	}
 
-	dec := 10000000000
+	dec := 1000000000
+	overflow := false
+	possibleOverflow := false
 	for ; i < len(s) && s[i] >= '0' && s[i] <= '9'; i++ {
-		dec /= 10
 		digit := int(s[i] - '0')
-		integer += digit * dec
-		if dec == 0 {
+
+		if dec == 0 || (dec == 1 && (overflow || (possibleOverflow && ((minus && digit > 8) || (!minus && digit > 7))))) {
 			if minus {
 				return min
 			}
 			return max
 		}
-		if equal || index == 0 {
-			more = s[i] > maxstr[index]
-			equal = s[i] == maxstr[index]
+
+		if minus {
+			if integer == 0 {
+				integer = -(digit * dec)
+			} else {
+				integer -= digit * dec
+			}
+		} else {
+			integer += digit * dec
 		}
-		index++
+
+		if dec == 10 {
+			almostMax := (max / 10) * 10
+			almostMin := (min / 10) * 10
+			overflow = (integer > almostMax) || (minus && integer < almostMin)
+			possibleOverflow = (integer == almostMax) || (minus && integer == almostMin)
+		}
+
+		dec /= 10
 	}
 
-	if dec == 1 {
-		if minus && more {
-			return min
-		}
-		if !minus && (more || equal) {
-			return max
-		}
-	} else {
-		integer /= dec
-	}
-
-	if minus {
-		return -integer
+	if dec != 0 {
+		integer /= (dec * 10)
 	}
 
 	return integer
